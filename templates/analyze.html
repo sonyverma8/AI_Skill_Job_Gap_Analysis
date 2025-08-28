@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h2 class="text-center mb-4">Skill Gap Analysis</h2>
+        
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Enter Your Skills</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="skills" class="form-label">List your skills (comma separated)</label>
+                        <textarea class="form-control" id="skills" name="skills" rows="5" placeholder="e.g., Python, Machine Learning, Data Analysis, SQL, Communication, Project Management">{{ request.form.skills if request.form.skills }}</textarea>
+                        <div class="form-text">Enter as many skills as you can think of, including technical and soft skills.</div>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-search"></i> Analyze My Skills
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        {% if prediction %}
+        <div class="card mt-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Analysis Results</h5>
+            </div>
+            <div class="card-body">
+                <h6>Recommended Job Role:</h6>
+                <div class="alert alert-primary fs-5 fw-bold">{{ prediction }}</div>
+                
+                {% if gap %}
+                <h6 class="mt-4">Skills You Need to Develop:</h6>
+                <div class="alert alert-warning">
+                    <p>Based on our analysis of similar job roles, we've identified these skills that would strengthen your profile:</p>
+                    <ul class="mb-0">
+                        {% for skill in gap %}
+                        <li>{{ skill }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% else %}
+                <div class="alert alert-success mt-4">
+                    <h6><i class="bi bi-check-circle"></i> Excellent Skills Match!</h6>
+                    <p class="mb-0">Your current skills align well with this role. You have all the essential skills needed for this position.</p>
+                </div>
+                {% endif %}
+                
+                {% if top_jobs %}
+                <h6 class="mt-4">Other Suitable Roles:</h6>
+                <p>Based on your skills, you might also be a good fit for these positions:</p>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Match Probability</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job, prob in top_jobs %}
+                            <tr>
+                                <td>{{ job }}</td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ prob * 100 }}%;" 
+                                             aria-valuenow="{{ prob * 100 }}" aria-valuemin="0" aria-valuemax="100">
+                                            {{ "%.1f"|format(prob * 100) }}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary view-skills" data-job-title="{{ job }}">
+                                        View Skills
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+                
+                <div class="mt-4 text-center">
+                    <a href="{{ url_for('recommendations', skills=request.form.skills) }}" class="btn btn-info me-2">
+                        <i class="bi bi-lightbulb"></i> Get Detailed Recommendations
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-person"></i> Save to Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<div class="modal fade" id="skillsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Required Skills for <span id="modalJobTitle"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalSkillsContent">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading skills data...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const viewSkillsButtons = document.querySelectorAll('.view-skills');
+    const skillsModal = new bootstrap.Modal(document.getElementById('skillsModal'));
+    const modalJobTitle = document.getElementById('modalJobTitle');
+    const modalSkillsContent = document.getElementById('modalSkillsContent');
+    
+    viewSkillsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const jobTitle = this.getAttribute('data-job-title');
+            modalJobTitle.textContent = jobTitle;
+            
+            fetch(`/api/job_skills/${encodeURIComponent(jobTitle)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.skills) {
+                        modalSkillsContent.innerHTML = `<p>${data.skills}</p>`;
+                    } else if (data.error) {
+                        modalSkillsContent.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    }
+                })
+                .catch(error => {
+                    modalSkillsContent.innerHTML = `<div class="alert alert-danger">Failed to load skills data.</div>`;
+                });
+            
+            skillsModal.show();
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Available Job Roles</h2>
+            <a href="{{ url_for('analyze') }}" class="btn btn-primary">
+                <i class="bi bi-search"></i> Analyze My Skills
+            </a>
+        </div>
+        
+        {% if jobs %}
+        <div class="row">
+            {% for job in jobs %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">{{ job[job_title_column] if job_title_column in job else job.values()|first }}</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if 'required_skills' in job %}
+                        <h6>Required Skills:</h6>
+                        <p class="card-text">{{ job['required_skills']|truncate(150) }}</p>
+                        {% endif %}
+                        
+                        {% if 'experience' in job %}
+                        <h6>Experience:</h6>
+                        <p class="card-text">{{ job['experience'] }}</p>
+                        {% endif %}
+                        
+                        {% if 'education' in job %}
+                        <h6>Education:</h6>
+                        <p class="card-text">{{ job['education'] }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-sm btn-outline-primary view-job-details" data-job-title="{{ job[job_title_column] if job_title_column in job else job.values()|first }}">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <nav aria-label="Job listing pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+        {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-briefcase" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">No Job Data Available</h3>
+                <p class="text-muted">Upload a dataset to view job listings and requirements.</p>
+                <a href="{{ url_for('upload') }}" class="btn btn-primary mt-2">
+                    <i class="bi bi-upload"></i> Upload Dataset
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<div class="modal fade" id="jobModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Job Details: <span id="modalJobTitle"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalJobContent">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading job details...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const viewJobButtons = document.querySelectorAll('.view-job-details');
+    const jobModal = new bootstrap.Modal(document.getElementById('jobModal'));
+    const modalJobTitle = document.getElementById('modalJobTitle');
+    const modalJobContent = document.getElementById('modalJobContent');
+    
+    viewJobButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const jobTitle = this.getAttribute('data-job-title');
+            modalJobTitle.textContent = jobTitle;
+            fetch(`/api/job_skills/${encodeURIComponent(jobTitle)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.skills) {
+                        modalJobContent.innerHTML = `
+                            <h6>Required Skills:</h6>
+                            <p>${data.skills}</p>
+                        `;
+                    } else if (data.error) {
+                        modalJobContent.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    }
+                })
+                .catch(error => {
+                    modalJobContent.innerHTML = `<div class="alert alert-danger">Failed to load job details.</div>`;
+                });
+            
+            jobModal.show();
+        });
+    });
+});
+</script>
+{% endblock %}

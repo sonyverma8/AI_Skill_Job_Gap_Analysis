@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">Train Machine Learning Model</h3>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Training the model will process the uploaded dataset and create a machine learning model that can
+                    predict job roles based on skills and identify skill gaps.
+                </p>
+                
+                {% if accuracy is not none %}
+                <div class="alert alert-success">
+                    <h5>Model Training Complete!</h5>
+                    <p class="mb-0">The model was trained with an accuracy of <strong>{{ "%.2f"|format(accuracy * 100) }}%</strong>.</p>
+                </div>
+                {% endif %}
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('train') }}" class="btn btn-success btn-lg">
+                        <i class="bi bi-gear-fill"></i> Train Model Now
+                    </a>
+                </div>
+                
+                {% if accuracy is not none %}
+                <div class="mt-4">
+                    <h5>Training Details</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6>Model Information</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Algorithm:</strong> Random Forest Classifier</li>
+                                        <li><strong>Estimators:</strong> 200 trees</li>
+                                        <li><strong>Max Depth:</strong> 20 levels</li>
+                                        <li><strong>Text Processing:</strong> TF-IDF with n-grams</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6>Dataset Information</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Training-Test Split:</strong> 80% - 20%</li>
+                                        <li><strong>Features:</strong> 15,000 most important</li>
+                                        <li><strong>N-gram Range:</strong> 1-2 (single words and pairs)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if feature_importance %}
+                <div class="mt-4">
+                    <h5>Feature Importance by Job Role</h5>
+                    <div class="accordion" id="featureAccordion">
+                        {% for job, features in feature_importance.items() %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ loop.index }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}">
+                                    {{ job }} - Top Skills
+                                </button>
+                            </h2>
+                            <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#featureAccordion">
+                                <div class="accordion-body">
+                                    <ol>
+                                        {% for feature, importance in features %}
+                                        <li>{{ feature }} ({{ "%.4f"|format(importance) }})</li>
+                                        {% endfor %}
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Next Steps</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('analyze') }}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-search"></i><br>
+                            Analyze Skills
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-info w-100">
+                            <i class="bi bi-speedometer2"></i><br>
+                            View Dashboard
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('jobs') }}" class="btn btn-outline-success w-100">
+                            <i class="bi bi-briefcase"></i><br>
+                            Browse Jobs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

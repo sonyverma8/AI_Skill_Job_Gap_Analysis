@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h2 class="text-center mb-4">Job Recommendations</h2>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" id="skills" name="skills" placeholder="Enter your skills (comma separated)" value="{{ skills }}">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary w-100">Get Recommendations</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if recommendations %}
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Recommended Jobs</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for job in recommendations %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ job.job_title }}</h5>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ job.probability }}%;" aria-valuenow="{{ job.probability }}" aria-valuemin="0" aria-valuemax="100">{{ job.probability }}% Match</div>
+                                </div>
+                                <h6>Required Skills:</h6>
+                                <p class="card-text">{{ job.required_skills }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% elif skills %}
+        <div class="alert alert-info">
+            No recommendations found for the provided skills. Try adding more skills or different skills.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

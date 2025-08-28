@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Skill Analysis Dashboard</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Model Status</h5>
+                {% if accuracy is not none %}
+                <h2 class="card-text">{{ "%.1f"|format(accuracy * 100) }}%</h2>
+                <p class="card-text">Accuracy</p>
+                {% else %}
+                <h2 class="card-text">Not Trained</h2>
+                <p class="card-text">Upload data and train model</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('train') }}" class="text-white">
+                    {% if accuracy is not none %}Retrain{% else %}Train{% endif %} Model <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Dataset</h5>
+                {% if job_counts %}
+                <h2 class="card-text">{{ job_counts|length }}</h2>
+                <p class="card-text">Job Roles</p>
+                {% else %}
+                <h2 class="card-text">No Data</h2>
+                <p class="card-text">Upload a dataset</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('upload') }}" class="text-white">
+                    Manage Dataset <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Analysis</h5>
+                <h2 class="card-text">Ready</h2>
+                <p class="card-text">Analyze your skills</p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('analyze') }}" class="text-white">
+                    Start Analysis <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h5 class="card-title">Recommendations</h5>
+                <h2 class="card-text">Personalized</h2>
+                <p class="card-text">Get job matches</p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('recommendations') }}" class="text-dark">
+                    View Recommendations <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if job_counts %}
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Job Roles Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job, count in job_counts.items() %}
+                            <tr>
+                                <td>{{ job }}</td>
+                                <td>{{ count }}</td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ (count / job_counts.values()|sum) * 100 }}%;" 
+                                             aria-valuenow="{{ (count / job_counts.values()|sum) * 100 }}" 
+                                             aria-valuemin="0" aria-valuemax="100">
+                                            {{ "%.1f"|format((count / job_counts.values()|sum) * 100) }}%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('analyze') }}" class="btn btn-primary mb-2">
+                        <i class="bi bi-search"></i> Analyze Skills
+                    </a>
+                    <a href="{{ url_for('jobs') }}" class="btn btn-info mb-2">
+                        <i class="bi bi-briefcase"></i> Browse Jobs
+                    </a>
+                    <a href="{{ url_for('recommendations') }}" class="btn btn-warning mb-2">
+                        <i class="bi bi-lightbulb"></i> Get Recommendations
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="btn btn-success">
+                        <i class="bi bi-person"></i> My Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">System Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="fw-bold">Model Status:</span>
+                    <span class="badge bg-{% if accuracy is not none %}success{% else %}danger{% endif %} float-end">
+                        {% if accuracy is not none %}Trained{% else %}Not Trained{% endif %}
+                    </span>
+                </div>
+                <div class="mb-3">
+                    <span class="fw-bold">Dataset Loaded:</span>
+                    <span class="badge bg-{% if job_counts %}success{% else %}danger{% endif %} float-end">
+                        {% if job_counts %}Yes{% else %}No{% endif %}
+                    </span>
+                </div>
+                <div class="mb-3">
+                    <span class="fw-bold">Analysis Ready:</span>
+                    <span class="badge bg-success float-end">Yes</span>
+                </div>
+                <div>
+                    <span class="fw-bold">Recommendations:</span>
+                    <span class="badge bg-success float-end">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-database-exclamation" style="font-size: 3rem;"></i>
+                <h3 class="mt-3">No Dataset Available</h3>
+                <p class="text-muted">Upload a dataset to start analyzing skills and job matches.</p>
+                <a href="{{ url_for('upload') }}" class="btn btn-primary mt-2">
+                    <i class="bi bi-upload"></i> Upload Dataset
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

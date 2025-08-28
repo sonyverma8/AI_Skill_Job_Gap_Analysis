@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">About Skill Gap Analyzer</h3>
+            </div>
+            <div class="card-body">
+                <h4>What is Skill Gap Analyzer?</h4>
+                <p>
+                    Skill Gap Analyzer is an innovative web application that uses machine learning to help individuals
+                    identify the gap between their current skills and the skills required for their desired job roles.
+                </p>
+                
+                <h4 class="mt-4">How It Works</h4>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h5><i class="bi bi-upload text-primary"></i> 1. Upload Job Data</h5>
+                                <p class="mb-0">Upload a CSV file containing job titles and required skills to train our machine learning model.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h5><i class="bi bi-gear text-primary"></i> 2. Train Model</h5>
+                                <p class="mb-0">Our system processes the data and builds a predictive model using Random Forest algorithm.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h5><i class="bi bi-search text-primary"></i> 3. Analyze Skills</h5>
+                                <p class="mb-0">Enter your skills to get personalized job recommendations and identify skill gaps.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h5><i class="bi bi-lightbulb text-primary"></i> 4. Get Recommendations</h5>
+                                <p class="mb-0">Receive tailored suggestions for skills to develop and jobs to target.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4 class="mt-4">Technology Stack</h4>
+                <div class="row text-center mt-3">
+                    <div class="col-md-2 col-4 mb-3">
+                        <div class="bg-light p-3 rounded">
+                            <i class="bi bi-code-slash" style="font-size: 2rem;"></i>
+                            <p class="mb-0 mt-2">Python</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-4 mb-3">
+                        <div class="bg-light p-3 rounded">
+                            <i class="bi bi-flower1" style="font-size: 2rem;"></i>
+                            <p class="mb-0 mt-2">Flask</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-4 mb-3">
+                        <div class="bg-light p-3 rounded">
+                            <i class="bi bi-diagram-3" style="font-size: 2rem;"></i>
+                            <p class="mb-0 mt-2">Scikit-learn</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-4 mb-3">
+                        <div class="bg-light p-3 rounded">
+                            <i class="bi bi-bootstrap" style="font-size: 2rem;"></i>
+                            <p class="mb-0 mt-2">Bootstrap</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-4 mb-3">
+                        <div class="bg-light p-3 rounded">
+                            <i class="bi bi-filetype-js" style="font-size: 2rem;"></i>
+                            <p class="mb-0 mt-2">JavaScript</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-4 mb-3">
+                        <div class="bg-light p-3 rounded">
+                            <i class="bi bi-database" style="font-size: 2rem;"></i>
+                            <p class="mb-0 mt-2">Pandas</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4 class="mt-4">Machine Learning Details</h4>
+                <p>
+                    Our system uses a <strong>Random Forest Classifier</strong> with <strong>TF-IDF vectorization</strong> to analyze
+                    text data and predict the most suitable job roles based on skills. The model is trained on job description
+                    data and can identify patterns between skill sets and job titles.
+                </p>
+                <ul>
+                    <li><strong>Algorithm:</strong> Random Forest Classifier with 200 estimators</li>
+                    <li><strong>Text Processing:</strong> TF-IDF with n-grams (1-2 words)</li>
+                    <li><strong>Features:</strong> Top 15,000 most important features</li>
+                    <li><strong>Accuracy:</strong> Typically achieves 85-95% accuracy on test data</li>
+                </ul>
+                
+                <h4 class="mt-4">Benefits</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-primary mb-3">
+                            <div class="card-header bg-transparent border-primary">For Job Seekers</div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Identify skills needed for target roles</li>
+                                    <li>Discover suitable career paths</li>
+                                    <li>Focus skill development efforts</li>
+                                    <li>Increase job application success rate</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-info mb-3">
+                            <div class="card-header bg-transparent border-info">For Employers & Educators</div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Understand skill requirements for roles</li>
+                                    <li>Design targeted training programs</li>
+                                    <li>Identify common skill gaps</li>
+                                    <li>Improve curriculum development</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('analyze') }}" class="btn btn-primary btn-lg me-3">
+                        <i class="bi bi-search"></i> Try It Now
+                    </a>
+                    <a href="{{ url_for('upload') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-upload"></i> Upload Data
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

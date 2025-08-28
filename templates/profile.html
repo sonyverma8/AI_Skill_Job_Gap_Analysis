@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <h2 class="mb-4">User Profile</h2>
+
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Personal Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('profile') }}">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name"
+                                value="{{ profile.name if profile and profile.name }}"
+                                placeholder="Your full name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                value="{{ profile.email if profile and profile.email }}"
+                                placeholder="your.email@example.com" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="skills" class="form-label">Your Skills (comma separated)</label>
+                        <textarea class="form-control" id="skills" name="skills" rows="4"
+                            placeholder="e.g., Python, Machine Learning, Data Analysis, SQL"
+                            required>{{ profile.skills if profile and profile.skills }}</textarea>
+                        <div class="form-text">List your skills to get better job and skill gap recommendations.</div>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-check-circle"></i> Save Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% if profile %}
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">Your Current Profile</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Name:</strong> {{ profile.name }}</p>
+                <p><strong>Email:</strong> {{ profile.email }}</p>
+                <p><strong>Skills:</strong> {{ profile.skills }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

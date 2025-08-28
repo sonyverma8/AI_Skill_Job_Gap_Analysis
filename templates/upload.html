@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">Upload Dataset</h3>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Upload a CSV file containing job data. The file should include columns for job titles and required skills.
+                    Other columns like description, experience, and education are optional but recommended for better accuracy.
+                </p>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Select CSV File</label>
+                        <input class="form-control" type="file" id="file" name="file" accept=".csv" required>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6>Expected CSV Format:</h6>
+                        <ul class="mb-0">
+                            <li>One row per job position</li>
+                            <li>Columns for job title and skills (other columns optional)</li>
+                            <li>Accepted column names for job title: "job_title", "title", "jobtitle", "job title"</li>
+                            <li>Accepted column names for skills: "skills", "skill_set", "required_skills", "requirements"</li>
+                        </ul>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success mt-3">
+                        <i class="bi bi-upload"></i> Upload Dataset
+                    </button>
+                    <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3 ms-2">Cancel</a>
+                </form>
+            </div>
+        </div>
+        
+        {% if dataset_exists %}
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Current Dataset</h5>
+            </div>
+            <div class="card-body">
+                <p>A dataset is already uploaded. Uploading a new file will replace the existing dataset.</p>
+                <a href="{{ url_for('train') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-gear"></i> Train Model with Current Dataset
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
